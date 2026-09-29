@@ -1,0 +1,8 @@
+# Add these sections to your existing Yazi vfs.toml.
+[farfile.work]
+kind = "scope"
+run = "farfile"
+
+[farfile.home]
+kind = "scope"
+run = "farfile"
