@@ -12,11 +12,11 @@ The broker serves the host filesystem over private HTTP/1.1. The client exposes 
 dotnet build .\FarFile.sln -c Release
 ```
 
-For a convenient standalone executable on Windows, publish each project separately:
+For framework-dependent Windows builds, publish each project separately and keep all files in the output directory together:
 
 ```powershell
-dotnet publish .\src\FarFile.Broker\FarFile.Broker.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o .\dist\broker
-dotnet publish .\src\FarFile.Client\FarFile.Client.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o .\dist\client
+dotnet publish .\src\FarFile.Broker\FarFile.Broker.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=false -o .\dist\broker
+dotnet publish .\src\FarFile.Client\FarFile.Client.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=false -o .\dist\client
 ```
 
 For ToolDock release ZIPs and catalog entries, see [tooldock/README.md](tooldock/README.md).
