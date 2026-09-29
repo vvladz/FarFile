@@ -1,0 +1,17 @@
+{
+  "tools": {
+    "farfile-broker": {
+      "repo": "vvladz/FarFile",
+      "asset": "farfile-broker-win-x64.zip",
+      "enabled": true,
+      "daemons": {
+        "farfile": {
+          "executable": "FarFile.Broker.exe",
+          "arguments": ["--listen", "0.0.0.0:8023"],
+          "autostart": true,
+          "restartOnUpdate": true
+        }
+      }
+    }
+  }
+}

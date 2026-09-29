@@ -1,0 +1,14 @@
+{
+  "tools": {
+    "farfile-client": {
+      "repo": "vvladz/FarFile",
+      "asset": "farfile-client-win-x64.zip",
+      "enabled": true,
+      "commands": {
+        "farfile": {
+          "executable": "FarFile.Client.exe"
+        }
+      }
+    }
+  }
+}
