@@ -1,6 +1,6 @@
 # ToolDock packages
 
-Run `pwsh -NoProfile -File .\scripts\package-tooldock.ps1` from the repository root. It publishes self-contained, single-file Windows x64 programs and writes `farfile-broker-win-x64.zip`, `farfile-client-win-x64.zip`, and SHA-256 files to `dist/tooldock/`. The executables sit at each ZIP root, as required by ToolDock. The client ZIP also carries the Yazi adapter and sample configuration.
+Run `pwsh -NoProfile -File .\scripts\package-tooldock.ps1` from the repository root. It publishes framework-dependent Windows x64 programs and writes `farfile-broker-win-x64.zip`, `farfile-client-win-x64.zip`, and SHA-256 files to `dist/tooldock/`. The broker machine needs the ASP.NET Core 10 runtime; the client machine needs the .NET 10 runtime. The executable and its support files sit at each ZIP root, as required by ToolDock. The client ZIP also carries the Yazi adapter and sample configuration.
 
 Check the archives, hashes, catalog names, and executable startup with `pwsh -NoProfile -File .\tests\tooldock-package.ps1`.
 
