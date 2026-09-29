@@ -2,8 +2,12 @@
 local M = {}
 local binary = os.getenv("FARFILE_CLIENT") or "FarFile.Client"
 
-local function failure(message)
-	return Error.fs { kind = "Other", message = message }
+local function failure(message, kind)
+	return Error.fs { kind = kind or "Other", message = message }
+end
+
+local function client_failure(message)
+	return failure(message, message:match("^farfile: HTTP 404:") and "NotFound" or "Other")
 end
 
 local function execute(args)
@@ -12,7 +16,7 @@ local function execute(args)
 		return nil, err or failure("cannot start FarFile.Client")
 	end
 	if not output.status.success then
-		return nil, failure(output.stderr ~= "" and output.stderr or "FarFile.Client failed")
+		return nil, client_failure(output.stderr ~= "" and output.stderr or "FarFile.Client failed")
 	end
 	return output.stdout
 end
@@ -161,7 +165,7 @@ function M:Write(job)
 	local output, wait_err = child:wait_with_output()
 	if not output then return false, wait_err end
 	if not output.status.success then
-		return false, failure(output.stderr ~= "" and output.stderr or "FarFile.Client write failed")
+		return false, client_failure(output.stderr ~= "" and output.stderr or "FarFile.Client write failed")
 	end
 	return true
 end
