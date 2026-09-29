@@ -38,6 +38,8 @@ try {
         try {
             $entries = @($archive.Entries | ForEach-Object FullName)
             if ($entries -cnotcontains $package.Program) { throw "ZIP lacks $($package.Program)." }
+            $runtimeConfig = "$($package.Program -replace '\.exe$', '').runtimeconfig.json"
+            if ($entries -cnotcontains $runtimeConfig) { throw "ZIP lacks $runtimeConfig." }
             if ($entries | Where-Object { $_.StartsWith('/') -or $_.Contains('..') -or $_.Contains('\') }) {
                 throw "ZIP contains an unsafe path: $($package.Asset)"
             }
@@ -49,6 +51,18 @@ try {
 
         $extract = Join-Path $checkRoot $package.Name
         [IO.Compression.ZipFile]::ExtractToDirectory($zipPath, $extract)
+        $runtime = Get-Content -Raw -LiteralPath (Join-Path $extract $runtimeConfig) | ConvertFrom-Json
+        $frameworkNames = @()
+        if ($runtime.runtimeOptions.PSObject.Properties.Name -contains 'framework') {
+            $frameworkNames += $runtime.runtimeOptions.framework.name
+        }
+        if ($runtime.runtimeOptions.PSObject.Properties.Name -contains 'frameworks') {
+            $frameworkNames += @($runtime.runtimeOptions.frameworks | ForEach-Object name)
+        }
+        if ($frameworkNames -cnotcontains 'Microsoft.NETCore.App') { throw 'Package does not depend on the .NET runtime.' }
+        if ($package.Name -eq 'broker' -and $frameworkNames -cnotcontains 'Microsoft.AspNetCore.App') {
+            throw 'Broker package does not depend on the ASP.NET Core runtime.'
+        }
         & (Join-Path $extract $package.Program) --help | Out-Null
         if ($LASTEXITCODE -ne 0) { throw "$($package.Program) failed to start." }
         Write-Output "OK $($package.Asset) $hash"
