@@ -9,8 +9,7 @@ The broker serves the host filesystem over private HTTP/1.1. The client exposes 
 .NET 10 SDK is needed to build. Framework-dependent builds need the ASP.NET Core 10 runtime for the broker and the .NET 10 runtime for the client. There are no NuGet package dependencies.
 
 ```powershell
-dotnet build .\src\FarFile.Broker\FarFile.Broker.csproj -c Release
-dotnet build .\src\FarFile.Client\FarFile.Client.csproj -c Release
+dotnet build .\FarFile.sln -c Release
 ```
 
 For a convenient standalone executable on Windows, publish each project separately:
