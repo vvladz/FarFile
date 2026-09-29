@@ -19,6 +19,8 @@ dotnet publish .\src\FarFile.Broker\FarFile.Broker.csproj -c Release -r win-x64 
 dotnet publish .\src\FarFile.Client\FarFile.Client.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o .\dist\client
 ```
 
+For ToolDock release ZIPs and catalog entries, see [tooldock/README.md](tooldock/README.md).
+
 ## Start a broker
 
 ```powershell
