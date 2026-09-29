@@ -22,19 +22,25 @@ function Add-ArchiveFile($archive, [string]$source, [string]$name) {
 }
 
 function New-Package([string]$project, [string]$program, [string]$asset, [hashtable]$extras) {
-    $publish = Join-Path $publishRoot $project
+    $publish = [IO.Path]::GetFullPath((Join-Path $publishRoot $project))
+    if (-not $publish.StartsWith($publishRoot + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'Publish directory escaped work.'
+    }
+    if (Test-Path -LiteralPath $publish) { Remove-Item -LiteralPath $publish -Recurse -Force }
     $projectFile = Join-Path $root "src\$project\$project.csproj"
     & dotnet restore $projectFile -r win-x64
     if ($LASTEXITCODE -ne 0) { throw "Restore failed: $project" }
-    & dotnet publish $projectFile -c Release -r win-x64 --self-contained true --no-restore `
-        -p:PublishSingleFile=true -p:DebugType=None -p:DebugSymbols=false -o $publish
+    & dotnet publish $projectFile -c Release -r win-x64 --self-contained false --no-restore `
+        -p:PublishSingleFile=false -p:DebugType=None -p:DebugSymbols=false -o $publish
     if ($LASTEXITCODE -ne 0) { throw "Publish failed: $project" }
 
     $zipPath = Join-Path $output $asset
     if (Test-Path -LiteralPath $zipPath) { Remove-Item -LiteralPath $zipPath -Force }
     $archive = [IO.Compression.ZipFile]::Open($zipPath, [IO.Compression.ZipArchiveMode]::Create)
     try {
-        Add-ArchiveFile $archive (Join-Path $publish "$program.exe") "$program.exe"
+        foreach ($file in (Get-ChildItem -LiteralPath $publish -File | Sort-Object Name)) {
+            Add-ArchiveFile $archive $file.FullName $file.Name
+        }
         foreach ($entry in $extras.GetEnumerator()) {
             Add-ArchiveFile $archive (Join-Path $root $entry.Value) $entry.Key
         }
